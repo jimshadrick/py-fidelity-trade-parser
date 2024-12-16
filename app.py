@@ -1,4 +1,6 @@
+import argparse
 import csv
+import sys
 from datetime import datetime
 from typing import Dict, List, Union
 
@@ -90,25 +92,105 @@ def get_trade_summary(trades: List[Dict]) -> Dict:
         'total_sell_trades': sum(1 for trade in trades if 'SOLD' in trade['action'].upper()),
         'unique_symbols': len(set(trade['symbol'] for trade in trades)),
         'total_fees': sum(trade['fees'] for trade in trades if trade['fees'] is not None),
-        'total_commission': sum(trade['commission'] for trade in trades if trade['commission'] is not None)
+        'total_commission': sum(trade['commission'] for trade in trades if trade['commission'] is not None),
+        'total_interest': sum(trade['accrued_interest'] for trade in trades if trade['accrued_interest'] is not None)
     }
     return summary
 
 
-# Example usage:
-if __name__ == "__main__":
-    file_path = "sample_export.csv"
-    trades = parse_trade_data(file_path)
+def write_trades_to_csv(trades: List[Dict], output_file: str) -> None:
+    """
+    Write trades data to a CSV file.
+    
+    Args:
+        trades (List[Dict]): List of trade dictionaries
+        output_file (str): Path to the output CSV file
+    """
+    if not trades:
+        print("No trades to write to CSV file.")
+        return
 
-    # Example of accessing the data
-    print("\nFirst trade details:")
-    if trades:
-        first_trade = trades[0]
-        for key, value in first_trade.items():
+    # Get field names from the first trade dictionary
+    fieldnames = list(trades[0].keys())
+
+    try:
+        with open(output_file, 'w', newline='', encoding='utf-8') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+            # Write headers
+            writer.writeheader()
+
+            # Write data rows
+            for trade in trades:
+                # Convert date objects to string format for CSV
+                trade_row = trade.copy()
+                if trade_row['run_date']:
+                    trade_row['run_date'] = trade_row['run_date'].strftime('%m/%d/%Y')
+                if trade_row['settlement_date']:
+                    trade_row['settlement_date'] = trade_row['settlement_date'].strftime('%m/%d/%Y')
+                writer.writerow(trade_row)
+
+        print(f"Successfully wrote {len(trades)} trades to {output_file}")
+
+    except IOError as e:
+        print(f"Error writing to CSV file: {e}")
+        sys.exit(1)
+
+
+def main():
+    """
+    Main function to handle command line arguments and process the files.
+    """
+    parser = argparse.ArgumentParser(description='Process Fidelity trade data from CSV file.')
+    parser.add_argument('input_file', help='Input CSV file path')
+    parser.add_argument('output_file', help='Output CSV file path')
+    parser.add_argument('-v', '--verbose', action='store_true', help='Increase output verbosity')
+
+    args = parser.parse_args()
+
+    try:
+        # Parse the input file
+        if args.verbose:
+            print(f"Reading from {args.input_file}")
+        trade_input = parse_trade_data(args.input_file)
+
+        # Get and print summary
+        summary = get_trade_summary(trade_input)
+        print("\nTrade Summary:")
+        for key, value in summary.items():
             print(f"{key}: {value}")
 
-    # Get and print summary
-    summary = get_trade_summary(trades)
-    print("\nTrade Summary:")
-    for key, value in summary.items():
-        print(f"{key}: {value}")
+        if args.verbose:
+            print(f"Found {len(trade_input)} trades")
+
+        # Write to output file
+        write_trades_to_csv(trade_input, args.output_file)
+
+    except FileNotFoundError:
+        print(f"Error: Input file '{args.input_file}' not found")
+        sys.exit(1)
+    except Exception as e:
+        print(f"Error processing files: {e}")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
+
+# Example usage:
+# if __name__ == "__main__":
+#     file_path = "sample_export.csv"
+#     trades = parse_trade_data(file_path)
+# 
+#     # Example of accessing the data
+#     print("\nFirst trade details:")
+#     if trades:
+#         first_trade = trades[0]
+#         for key, value in first_trade.items():
+#             print(f"{key}: {value}")
+# 
+#     # Get and print summary
+#     summary = get_trade_summary(trades)
+#     print("\nTrade Summary:")
+#     for key, value in summary.items():
+#         print(f"{key}: {value}")
