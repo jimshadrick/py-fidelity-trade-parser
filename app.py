@@ -35,6 +35,8 @@ def parse_trade_data(file_path: str) -> List[Dict[str, Union[str, float, None]]]
                 trade_dict = {
                     'run_date': datetime.strptime(date_str, '%m/%d/%Y').date(),
                     # 'action': row['Action'].strip(),
+                    'run_month': datetime.strptime(date_str, '%m/%d/%Y').date().month,
+                    'run_year': datetime.strptime(date_str, '%m/%d/%Y').date().year,
                     'action': get_trade_action(row['Action']),
                     'symbol': row['Symbol'].strip(),
                     'description': row['Description'].strip(),
