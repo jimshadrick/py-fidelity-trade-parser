@@ -45,10 +45,10 @@ def parse_trade_data(file_path: str) -> List[Dict[str, Union[str, float, None]]]
                     'type': row['Type'].strip(),
                     'quantity': float(row['Quantity']) if row['Quantity'].strip() else None,
                     'price': float(row['Price ($)']) if row['Price ($)'].strip() else None,
-                    'commission': float(row['Commission ($)']) if row['Commission ($)'].strip() else None,
-                    'fees': float(row['Fees ($)']) if row['Fees ($)'].strip() else None,
-                    'accrued_interest': float(row['Accrued Interest ($)']) if row[
-                        'Accrued Interest ($)'].strip() else None,
+                    # 'commission': float(row['Commission ($)']) if row['Commission ($)'].strip() else None,
+                    # 'fees': float(row['Fees ($)']) if row['Fees ($)'].strip() else None,
+                    # 'accrued_interest': float(row['Accrued Interest ($)']) if row[
+                    #     'Accrued Interest ($)'].strip() else None,
                     'amount': float(row['Amount ($)']) if row['Amount ($)'].strip() else None,
                     # 'cash_balance': row['Cash Balance ($)'].strip(),
                     'settlement_date': datetime.strptime(row['Settlement Date'].strip(), '%m/%d/%Y').date() if row[
@@ -90,10 +90,10 @@ def get_trade_summary(trades: List[Dict]) -> Dict:
         'total_trades': len(trades),
         'total_buy_trades': sum(1 for trade in trades if 'BOUGHT' in trade['action'].upper()),
         'total_sell_trades': sum(1 for trade in trades if 'SOLD' in trade['action'].upper()),
-        'unique_symbols': len(set(trade['symbol'] for trade in trades)),
-        'total_fees': sum(trade['fees'] for trade in trades if trade['fees'] is not None),
-        'total_commission': sum(trade['commission'] for trade in trades if trade['commission'] is not None),
-        'total_interest': sum(trade['accrued_interest'] for trade in trades if trade['accrued_interest'] is not None)
+        'unique_symbols': len(set(trade['symbol'] for trade in trades))
+        # 'total_fees': sum(trade['fees'] for trade in trades if trade['fees'] is not None),
+        # 'total_commission': sum(trade['commission'] for trade in trades if trade['commission'] is not None),
+        # 'total_interest': sum(trade['accrued_interest'] for trade in trades if trade['accrued_interest'] is not None)
     }
     return summary
 
