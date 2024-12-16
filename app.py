@@ -43,13 +43,13 @@ def parse_trade_data(file_path: str) -> List[Dict[str, Union[str, float, None]]]
                     'symbol': row['Symbol'].strip(),
                     'description': row['Description'].strip(),
                     'type': row['Type'].strip(),
-                    'quantity': float(row['Quantity']) if row['Quantity'].strip() else None,
+                    'quantity': abs(float(row['Quantity'])) if row['Quantity'].strip() else None,
                     'price': float(row['Price ($)']) if row['Price ($)'].strip() else None,
                     # 'commission': float(row['Commission ($)']) if row['Commission ($)'].strip() else None,
                     # 'fees': float(row['Fees ($)']) if row['Fees ($)'].strip() else None,
                     # 'accrued_interest': float(row['Accrued Interest ($)']) if row[
                     #     'Accrued Interest ($)'].strip() else None,
-                    'amount': float(row['Amount ($)']) if row['Amount ($)'].strip() else None,
+                    'amount': abs(float(row['Amount ($)'])) if row['Amount ($)'].strip() else None,
                     # 'cash_balance': row['Cash Balance ($)'].strip(),
                     'settlement_date': datetime.strptime(row['Settlement Date'].strip(), '%m/%d/%Y').date() if row[
                         'Settlement Date'].strip() else None
