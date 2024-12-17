@@ -45,7 +45,8 @@ The script follows this process flow:
 ## Project Structure
 
 - `app.py`: Contains the main Python script for parsing the file.
-- `sample_export.csv`: A sample export file from Fidelity trade transactions.
+- `sample_import.csv`: A sample export file from Fidelity trade transactions.
+- `sample_output.csv`: A sample reformatted file after cleanup and transformations.
 
 ## Requirements
 
