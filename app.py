@@ -179,7 +179,7 @@ if __name__ == "__main__":
 
 # Example usage:
 # if __name__ == "__main__":
-#     file_path = "sample_export.csv"
+#     file_path = "sample_import.csv"
 #     trades = parse_trade_data(file_path)
 # 
 #     # Example of accessing the data
